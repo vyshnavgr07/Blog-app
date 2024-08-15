@@ -9,9 +9,15 @@ import api from "../../utils/axiosInterceptor";
 export default function Home() {
   const {blogs,setBlogs}=useBlogs()
   const router = useRouter()
-  
+  const token = window.localStorage.getItem("token");
+if(!token){
+  setTimeout(()=>{
+    router.push('/login')
+  },3000)
+ 
+}
   useEffect(() => {
-   const token = window.localStorage.getItem("token");
+    
        const fetchBlogPosts = async () => {
            try {
                const response = await api.get('/blogs');
@@ -54,15 +60,13 @@ export default function Home() {
                   onClick={() => router.push(`/blog/${post._id}`)}
                   className="text-2xl font-semibold text-black mb-2 cursor-pointer hover:text-blue-600"
                 >
-                  {post.title}
+                  {post?.title}
                 </h2>
                 <p className="text-gray-800 mb-4">{post.content}</p>
                 <p className="text-gray-600 text-sm mb-2">
                   by {post?.author} on {new Date(post.createdAt).toLocaleDateString()}
                 </p>
-                {/* <Link href={`/blog/${post._id}`}>
-                  <a className="text-blue-500 hover:underline">Read more</a>
-                </Link> */}
+               
               </div>
             </div>
           ))}

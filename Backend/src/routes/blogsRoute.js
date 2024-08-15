@@ -5,10 +5,10 @@ const verifyToken=require('../middleware/verifyToken')
 
 
 blogRoutes.post('/',verifyToken,blogController.createBlog)
-.get('/',verifyToken,blogController.getBlog)
+.get('/',blogController.getBlog)
 .get('/:_id',verifyToken,blogController.getBlogId)
 .get('/user/:_id',verifyToken,blogController.getBlogByUserId)
-.put('/',verifyToken,blogController.UpdateBlog)
+.put('/:id',verifyToken,blogController.UpdateBlog)
 .delete('/:id',verifyToken,blogController.deletedBlog)
 .post('/comments/:id',verifyToken,blogController.addComment)
 .get('/comments/:id',verifyToken,blogController.getComment)

@@ -91,9 +91,10 @@ const getBlogByUserId=async(req,res)=>{
 
 const UpdateBlog = async (req, res) => {
     try {
-        const { _id, title, content, author } = req.body;
+        const id=req.params.id
+        const {title, content, author } = req.body;
 
-        const blog = await Blog.findOneAndUpdate({ _id }, { title, content, author }, { new: true })
+        const blog = await Blog.findOneAndUpdate({ _id:id }, { title, content, author }, { new: true })
         if (!blog) {
             return res.status(404).json({
                 status: 'failure',
