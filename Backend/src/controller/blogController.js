@@ -1,22 +1,26 @@
 const Blog = require('../models/blogSchema')
 const Comment = require('../models/commentSchema');
-
+const User=require('../models/userSchema')
 
 
 const createBlog = async (req, res) => {
     try {
         const { user } = req.decoded;
         const data = req.body
+        console.log(data,user)
         if (!data) {
-            res.status(200).json({
+            res.status(400).json({
                 status: 'failed',
                 message: ""
             })
         }
-        const blog = await new Blog({ userId: user._id, ...data });
+        const userD=await User.findOne({_id:user._id})
+        console.log(userD,"userr");
+        
+        const blog = await new Blog({ userId: user._id,author:user.userName,...data });
         const savedBlog = await blog.save();
 
-        return res.status(200).json({
+        return res.status(201).json({ 
             status: 'success',
             message: 'blog created',
             savedBlog
@@ -30,7 +34,7 @@ const createBlog = async (req, res) => {
 
 const getBlog = async (req, res) => {
     try {
-        const blog = await Blog.find();
+        const blog = await Blog.find().populate("userId");
         res.status(200).json({
             status: 'success',
             message: 'succesfully fetched',
@@ -41,6 +45,49 @@ const getBlog = async (req, res) => {
 
     }
 }
+
+const getBlogId = async (req, res) => {
+    try {
+    const _id=req.params._id;
+    const blog = await Blog.findOne({_id}).populate('userId');
+        res.status(200).json({
+            status: 'success',
+            message: 'succesfully fetched',
+            blog
+        })
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+const getBlogByUserId=async(req,res)=>{
+    try {
+        const id=req.params._id
+        console.log(id);
+        
+        const blogs=await Blog.find({userId:id});
+        console.log(blogs,"blogg");
+        
+        if(!blogs){
+          return  res.status(400).json({
+                status: 'failed',
+                message: 'no data found',
+                }) }
+
+                res.status(200).json({
+                    status: 'success',
+                    message: 'succesfully fetched',
+                    blogs
+                })
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+
 
 const UpdateBlog = async (req, res) => {
     try {
@@ -86,13 +133,16 @@ const deletedBlog = async (req, res) => {
 }
 
 
+
+
 const addComment = async (req, res) => {
     try {
         const id = req.decoded.user._id;
+        const blogId=req.params.id
         console.log(id, "usur");
 
         const data = req.body;
-        const comment = await new Comment({ userId: id, ...data });
+        const comment = await new Comment({ userId: id,blogId:blogId,...data });
         const savedComment = await comment.save();
         return res.status(200).json({
             status: 'succes',
@@ -107,7 +157,9 @@ const addComment = async (req, res) => {
 
 const getComment=async(req,res)=>{
 try {
-    const getcom=await Comment.find().populate("userId").populate("blogId");
+    const id=req.params.id
+
+    const getcom=await Comment.find({blogId:id}).populate("userId").populate("blogId");
     return res.status(200).json({
         status: 'succes',
         message: 'succesfully updated',
@@ -118,5 +170,5 @@ try {
     
 }
 }
-module.exports = { createBlog, getBlog, UpdateBlog, deletedBlog, addComment,getComment } 
+module.exports = { createBlog, getBlog, UpdateBlog, deletedBlog, addComment,getComment,getBlogId,getBlogByUserId } 
 

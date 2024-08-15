@@ -6,9 +6,11 @@ const verifyToken=require('../middleware/verifyToken')
 
 blogRoutes.post('/',verifyToken,blogController.createBlog)
 .get('/',verifyToken,blogController.getBlog)
+.get('/:_id',verifyToken,blogController.getBlogId)
+.get('/user/:_id',verifyToken,blogController.getBlogByUserId)
 .put('/',verifyToken,blogController.UpdateBlog)
 .delete('/:id',verifyToken,blogController.deletedBlog)
-.post('/comments',verifyToken,blogController.addComment)
-.get('/comments',verifyToken,blogController.getComment)
-   
+.post('/comments/:id',verifyToken,blogController.addComment)
+.get('/comments/:id',verifyToken,blogController.getComment)
+
 module.exports=blogRoutes;   
